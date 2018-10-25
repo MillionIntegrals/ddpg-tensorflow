@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+tensorflow = "*"
+tensorflow-gpu = "*"
+gym = {extras = ["mujoco"], version = "*"}
+numpy = "*"
+matplotlib = "*"
+pandas = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
