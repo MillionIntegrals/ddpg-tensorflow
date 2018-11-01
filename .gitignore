@@ -105,3 +105,6 @@ venv.bak/
 
 # PyCharm
 /.idea
+
+/local_scripts
+/environment.yaml
