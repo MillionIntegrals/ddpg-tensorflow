@@ -1,4 +1,4 @@
-from vel.openai.baselines.common.vec_env import VecEnvWrapper
+from local.openai.baselines.common.vec_env import VecEnvWrapper
 import numpy as np
 from gym import spaces
 

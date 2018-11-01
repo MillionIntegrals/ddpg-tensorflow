@@ -1,7 +1,7 @@
 import numpy as np
 from multiprocessing import Process, Pipe
-from vel.openai.baselines.common.vec_env import VecEnv, CloudpickleWrapper
-from vel.openai.baselines.common.tile_images import tile_images
+from local.openai.baselines.common.vec_env import VecEnv, CloudpickleWrapper
+from local.openai.baselines.common.tile_images import tile_images
 
 
 def worker(remote, parent_remote, env_fn_wrapper):

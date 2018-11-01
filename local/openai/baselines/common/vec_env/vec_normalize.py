@@ -1,5 +1,5 @@
-from vel.openai.baselines.common.vec_env import VecEnvWrapper
-from vel.openai.baselines.common.running_mean_std import RunningMeanStd
+from local.openai.baselines.common.vec_env import VecEnvWrapper
+from local.openai.baselines.common.running_mean_std import RunningMeanStd
 import numpy as np
 
 class VecNormalize(VecEnvWrapper):
