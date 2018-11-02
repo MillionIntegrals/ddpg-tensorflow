@@ -20,16 +20,6 @@ class DeepDeterministicPolicyGradient:
         self.critic_l2_reg = critic_l2_reg
 
         with tf.variable_scope(self.name):
-            initialization_update_ops = []
-            step_update_ops = []
-
-            # Set up tensorflow ops to assign model vars to target vars
-            for target_var, model_var in zip(self.target_model.variables(), self.model.variables()):
-                initialization_update_ops.append(tf.assign(target_var, model_var))
-                step_update_ops.append(tf.assign(target_var, target_var * (1.0 - self.tau) + model_var * self.tau))
-
-            self.initialization_update_ops = tf.group(initialization_update_ops)
-            self.step_update_ops = tf.group(step_update_ops)
 
             self.value_target_input = tf.placeholder(tf.float32, shape=(None, 1), name="target_value")
 
@@ -72,6 +62,17 @@ class DeepDeterministicPolicyGradient:
                 name="actor_optimize"
             )
 
+            initialization_update_ops = []
+            step_update_ops = []
+
+            # Set up tensorflow ops to assign model vars to target vars
+            for target_var, model_var in zip(self.target_model.variables(), self.model.variables()):
+                initialization_update_ops.append(tf.assign(target_var, model_var))
+                step_update_ops.append(tf.assign(target_var, target_var * (1.0 - self.tau) + model_var * self.tau))
+
+            self.initialization_update_ops = tf.group(initialization_update_ops)
+            self.step_update_ops = tf.group(step_update_ops)
+
     def initialize_training(self):
         # Initialize tensorflow variables (reset model weights etc.)
         self.session.run(tf.global_variables_initializer())
@@ -83,15 +84,18 @@ class DeepDeterministicPolicyGradient:
         value_target = rollout['rewards'] + next_state_value * (1.0 - rollout['dones']) * self.discount_factor
 
         if self.ops_together:
-            _, _, critic_loss_value, actor_loss_value, _ = self.session.run([
+            _, _, critic_loss_value, actor_loss_value = self.session.run([
                 self.critic_optimize, self.actor_optimize,
                 self.critic_loss, self.actor_loss,
-                self.step_update_ops
+                # self.step_update_ops
             ], feed_dict={
                 self.model.observations_input: rollout['observations'],
                 self.model.actions_input: rollout['actions'],
                 self.value_target_input: value_target.reshape(-1, 1)
+
             })
+
+            _ = self.session.run([self.step_update_ops])
         else:
             _, critic_loss_value = self.session.run([self.critic_optimize, self.critic_loss], feed_dict={
                 self.model.observations_input: rollout['observations'],

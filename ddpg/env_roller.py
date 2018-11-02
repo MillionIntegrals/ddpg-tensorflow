@@ -28,7 +28,7 @@ class EnvironmentRoller:
 
         self.ob_rms = RunningMeanStd(shape=self.environment.observation_space.shape) if normalize_observations else None
         self.ret_rms = RunningMeanStd(shape=()) if normalize_returns else None
-        self.clip_obs = 5.0
+        self.clip_obs = 10.0
         self.accumulated_return = 0.0
 
         self.episode_rewards = collections.deque(maxlen=100)
@@ -36,7 +36,7 @@ class EnvironmentRoller:
 
     def roll_out(self):
         """ Evaluate environment for a single step and store in the buffer """
-        action = self.model.action(self._filter_observation(self.last_observation[None]))
+        action = self.model.action(self._filter_observation(self.last_observation[None]))[0]
 
         if self.action_noise is not None:
             noise = self.action_noise()
@@ -45,7 +45,7 @@ class EnvironmentRoller:
                 action + noise, self.environment.action_space.low, self.environment.action_space.high
             )
 
-        new_obs, reward, done, info = self.environment.step(action[0])
+        new_obs, reward, done, info = self.environment.step(action)
 
         if self.ob_rms is not None:
             self.ob_rms.update(new_obs[None])

@@ -57,7 +57,7 @@ class DeterministicPolicyModel:
                 self.actor_head_rescaled = self.actor_head * action_space.high
 
             self.model_computed_combined = tf.concat(
-                [self.observations_input, self.actor_head], axis=1, name="model_computed_combined"
+                [self.observations_input, self.actor_head_rescaled], axis=1, name="model_computed_combined"
             )
 
             with tf.variable_scope("critic"):
@@ -79,7 +79,6 @@ class DeterministicPolicyModel:
                     kernel_initializer=initializers.random_uniform(-3.0e-3, 3.0e-3)
                 )
 
-            with tf.variable_scope("critic"):
                 self.model_critic01 = layers.dense(
                     inputs=self.model_computed_combined, units=64, activation=tf.tanh, name="layer_one",
                     bias_initializer=initializers.zeros(),
