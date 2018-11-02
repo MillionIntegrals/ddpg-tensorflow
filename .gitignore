@@ -108,3 +108,6 @@ venv.bak/
 
 /local_scripts
 /environment.yaml
+
+/log
+/tensorboard
